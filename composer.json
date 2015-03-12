@@ -10,7 +10,7 @@
         }
     ],
     "require": {
-        "laravel/socialite": "dev-master",
+        "laravel/socialite": "dev-master"
     },
     "autoload": {
         "psr-4": {
