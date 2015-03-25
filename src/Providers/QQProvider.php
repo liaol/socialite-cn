@@ -6,15 +6,16 @@ use Laravel\Socialite\Two\ProviderInterface;
 use Laravel\Socialite\Two\User;
 
 
-class WeiboProvider extends AbstractProvider implements ProviderInterface
+class QQProvider extends AbstractProvider implements ProviderInterface
 {
+    protected openId;
 
 	 /**
      * {@inheritdoc}
      */
     protected function getAuthUrl($state)
     {
-        return $this->buildAuthUrlFromBase('https://api.weibo.com/oauth2/authorize', $state);
+        return $this->buildAuthUrlFromBase('https://graph.qq.com/oauth2.0/authorize', $state);
     }
 
 
@@ -23,11 +24,9 @@ class WeiboProvider extends AbstractProvider implements ProviderInterface
      */
     protected function getTokenUrl()
     {
-        return 'https://api.weibo.com/oauth2/access_token';
+        return 'https://graph.qq.com/oauth2.0/token';
     }
-
-      /**
-     * Get the access token for the given code.
+/** * Get the access token for the given code.
      *
      * @param  string  $code
      * @return string
@@ -42,12 +41,12 @@ class WeiboProvider extends AbstractProvider implements ProviderInterface
     /**
      * {@inheritdoc}
      */
-    protected function getUserByToken($token)
-    {
-        $uid = $this->getUid($token);
-        $response = $this->getHttpClient()->get('https://api.weibo.com/2/users/show.json',['query'=>[
+    protected function getUserByToken($token) { 
+        $openId = $this->getOpenId($token);
+        $response = $this->getHttpClient()->get('https://graph.qq.com/user/get_user_info',['query'=>[
             'access_token'=>$token,
-            'uid'=>$uid,
+            'openid'=>$openId,
+            'oauth_consumer_key'=>$this->client_id,
         ]]);
         return json_decode($response->getBody(), true);
     }
@@ -58,20 +57,21 @@ class WeiboProvider extends AbstractProvider implements ProviderInterface
     protected function mapUserToObject(array $user)
     {
         return (new User)->setRaw($user)->map([
-            'id' => $user['idstr'], 'nickname' => $user['name'], 'avatar' => $user['avatar_large'],
+            'id' => $this->openId, 'nickname' => $user['nickname'], 'avatar' => $user['figureurl'],
         ]);
     }
 
     /**
-        * @Synopsis  get uid
+        * @Synopsis  get openid
         *
         * @Param $token
         *
         * @Returns  uid string 
      */
-    protected function getUid($token)
+    protected function getOpenId($token)
     {
-        $response = $this->getHttpClient()->get('https://api.weibo.com/2/account/get_uid.json',['query'=>['access_token'=>$token]]);
-        return json_decode($response->getBody(), true)['uid'];
+        $response = $this->getHttpClient()->get('https://graph.qq.com/oauth2.0/me',['query'=>['access_token'=>$token]]);
+        $this->openId =  json_decode($response->getBody(), true)['openid'];
+        return $this->openId;
     }
 }
