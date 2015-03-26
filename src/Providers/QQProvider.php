@@ -8,7 +8,7 @@ use Laravel\Socialite\Two\User;
 
 class QQProvider extends AbstractProvider implements ProviderInterface
 {
-    protected openId;
+    protected $openId;
 
 	 /**
      * {@inheritdoc}
@@ -33,6 +33,10 @@ class QQProvider extends AbstractProvider implements ProviderInterface
      */
     public function getAccessToken($code)
     {
+        //if the code is setted ,use it instead
+        if (!is_null($this->code)) {
+            $code = $this->code;
+        }
         $response = $this->getHttpClient()->post($this->getTokenUrl(),['query'=>($this->getTokenFields($code))]);
         return  $this->parseAccessToken($response->getBody());
     }
@@ -73,5 +77,20 @@ class QQProvider extends AbstractProvider implements ProviderInterface
         $response = $this->getHttpClient()->get('https://graph.qq.com/oauth2.0/me',['query'=>['access_token'=>$token]]);
         $this->openId =  json_decode($response->getBody(), true)['openid'];
         return $this->openId;
+    }
+
+    /**
+        * @Synopsis  check http error 
+        *
+        * @Param $data
+        *
+        * @Returns  mix 
+     */
+    protected function checkError($data)
+    {
+        if ($data['errcode'] != 0) {
+            throw new ErrorCodeException($data['errcode'],$data['errmsg']);
+        }
+        return $data;
     }
 }

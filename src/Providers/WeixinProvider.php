@@ -5,11 +5,12 @@ use Laravel\Socialite\Two\AbstractProvider;
 use Laravel\Socialite\Two\ProviderInterface;
 use Laravel\Socialite\Two\User;
 
-
 class WeixinProvider extends AbstractProvider implements ProviderInterface
 {
 
     protected $openId;
+
+
 	 /**
      * {@inheritdoc}
      */
@@ -50,6 +51,10 @@ class WeixinProvider extends AbstractProvider implements ProviderInterface
      */
     public function getAccessToken($code)
     {
+        //if the code is setted ,use it instead
+        if (!is_null($this->code)) {
+            $code = $this->code;
+        }
         $response = $this->getHttpClient()->get($this->getTokenUrl(),['query'=>($this->getTokenFields($code))]);
         return  $this->parseAccessToken($response->getBody());
     }
@@ -74,7 +79,7 @@ class WeixinProvider extends AbstractProvider implements ProviderInterface
             'openid'=>$this->openId,
             'lang'=>'zh_CN'//简体中文
         ]]);
-        return json_decode($response->getBody(), true);
+        return checkError(json_decode($response->getBody(), true));
     }
 
     /**
@@ -87,10 +92,28 @@ class WeixinProvider extends AbstractProvider implements ProviderInterface
         ]);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function parseAccessToken($body)
     {
-        $jsonArray =  json_decode($body, true);
+        $jsonArray =  $this->checkError(json_decode($body, true));
         $this->openId = $jsonArray['openid'];//记录openid
         return $jsonArray['access_token'];
+    }
+
+    /**
+        * @Synopsis  check http error 
+        *
+        * @Param $data
+        *
+        * @Returns  mix 
+     */
+    protected function checkError($data)
+    {
+        if ($data['errcode'] != 0) {
+            throw new ErrorCodeException($data['errcode'],$data['errmsg']);
+        }
+        return $data;
     }
 }

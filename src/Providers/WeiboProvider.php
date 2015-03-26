@@ -34,6 +34,10 @@ class WeiboProvider extends AbstractProvider implements ProviderInterface
      */
     public function getAccessToken($code)
     {
+        //if the code is setted ,use it instead
+        if (!is_null($this->code)) {
+            $code = $this->code;
+        }
         $response = $this->getHttpClient()->post($this->getTokenUrl(),['query'=>($this->getTokenFields($code))]);
         return  $this->parseAccessToken($response->getBody());
     }
@@ -73,5 +77,20 @@ class WeiboProvider extends AbstractProvider implements ProviderInterface
     {
         $response = $this->getHttpClient()->get('https://api.weibo.com/2/account/get_uid.json',['query'=>['access_token'=>$token]]);
         return json_decode($response->getBody(), true)['uid'];
+    }
+
+    /**
+        * @Synopsis  check http error 
+        *
+        * @Param $data
+        *
+        * @Returns  mix 
+     */
+    protected function checkError($data)
+    {
+        if (isset($data['error_code'])) {
+            throw new ErrorCodeException($data['error_code'],$data['error']);
+        }
+        return $data;
     }
 }
