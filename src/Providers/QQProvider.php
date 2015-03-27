@@ -37,8 +37,20 @@ class QQProvider extends AbstractProvider implements ProviderInterface
         if (!is_null($this->code)) {
             $code = $this->code;
         }
-        $response = $this->getHttpClient()->post($this->getTokenUrl(),['query'=>($this->getTokenFields($code))]);
-        return  $this->parseAccessToken($response->getBody());
+        $response = $this->getHttpClient()->get($this->getTokenUrl(),['query'=>($this->getTokenFields($code))]);
+        return  $this->parseAccessToken($this->removeCallback($response->getBody()));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function getTokenFields($code)
+    {
+        return [
+            'client_id' => $this->clientId, 'client_secret' => $this->clientSecret,
+            'code' => $code, 'redirect_uri' => $this->redirectUrl,
+            'grant_type'=>'authorization_code'
+        ];
     }
 
 
@@ -52,7 +64,7 @@ class QQProvider extends AbstractProvider implements ProviderInterface
             'openid'=>$openId,
             'oauth_consumer_key'=>$this->client_id,
         ]]);
-        return json_decode($response->getBody(), true);
+        return $this->checkError(json_decode($this->removeCallback($response->getBody()), true));
     }
 
     /**
@@ -75,7 +87,7 @@ class QQProvider extends AbstractProvider implements ProviderInterface
     protected function getOpenId($token)
     {
         $response = $this->getHttpClient()->get('https://graph.qq.com/oauth2.0/me',['query'=>['access_token'=>$token]]);
-        $this->openId =  json_decode($response->getBody(), true)['openid'];
+        $this->openId =  $this->checkError(json_decode($this->removeCallback($response->getBody()), true))['openid'];
         return $this->openId;
     }
 
@@ -88,9 +100,19 @@ class QQProvider extends AbstractProvider implements ProviderInterface
      */
     protected function checkError($data)
     {
-        if ($data['errcode'] != 0) {
-            throw new ErrorCodeException($data['errcode'],$data['errmsg']);
+        if ($data['error'] != 0) {
+            throw new ErrorCodeException($data['error'],$data['error_description']);
         }
         return $data;
+    }
+
+    protected function parseAccessToken($body)
+    {
+        return $this->checkError(json_decode($body, true))['access_token'];
+    }
+
+    protected function removeCallback($body)
+    {
+        return  str_replace(['callback(',')',';'],'',$body);
     }
 }
