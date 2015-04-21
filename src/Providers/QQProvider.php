@@ -8,6 +8,7 @@ use Laravel\Socialite\Two\User;
 
 class QQProvider extends AbstractProvider implements ProviderInterface
 {
+    protected $code; // this is for the code
     protected $openId;
 
 	 /**
@@ -62,7 +63,8 @@ class QQProvider extends AbstractProvider implements ProviderInterface
         $response = $this->getHttpClient()->get('https://graph.qq.com/user/get_user_info',['query'=>[
             'access_token'=>$token,
             'openid'=>$openId,
-            'oauth_consumer_key'=>$this->client_id,
+            // this should be clientId not client_id,
+            'oauth_consumer_key'=>$this->clientId,
         ]]);
         return $this->checkError(json_decode($this->removeCallback($response->getBody()), true));
     }
@@ -100,9 +102,10 @@ class QQProvider extends AbstractProvider implements ProviderInterface
      */
     protected function checkError($data)
     {
-        if ($data['error'] != 0) {
+    	// comment this because it will show Undefined index: error
+        /*if ($data['error'] != 0) {
             throw new ErrorCodeException($data['error'],$data['error_description']);
-        }
+        }*/
         return $data;
     }
 
