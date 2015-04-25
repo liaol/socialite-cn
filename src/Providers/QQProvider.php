@@ -27,7 +27,8 @@ class QQProvider extends AbstractProvider implements ProviderInterface
     {
         return 'https://graph.qq.com/oauth2.0/token';
     }
-/** * Get the access token for the given code.
+
+    /** * Get the access token for the given code.
      *
      * @param  string  $code
      * @return string
@@ -102,10 +103,9 @@ class QQProvider extends AbstractProvider implements ProviderInterface
      */
     protected function checkError($data)
     {
-    	// comment this because it will show Undefined index: error
-        /*if ($data['error'] != 0) {
-            throw new ErrorCodeException($data['error'],$data['error_description']);
-        }*/
+        if ($data['code'] != 0) {
+            throw new ErrorCodeException($data['code'],$data['msg']);
+        }
         return $data;
     }
 
