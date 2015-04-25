@@ -6,9 +6,9 @@ Oauth authentication with Weixin,Weibo and QQ.
 
 ## Usage
 
-include in your composer.json file:
+require in your composer.json file:
 ```
-"liaol/socialite-cn": "dev-master"
+"liaol/socialite-cn": "~1.0"
 ```
 
 register the  ```'Liaol\SocialiteCn\SocialiteCnServiceProvider'``` in your ```config/app.php```
