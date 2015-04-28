@@ -72,7 +72,7 @@ class QQProvider extends AbstractProvider implements ProviderInterface
     protected function mapUserToObject(array $user)
     {
         return (new User)->setRaw($user)->map([
-            'id' => $this->openId, 'nickname' => $user['nickname'], 'avatar' => $user['figureurl'],
+            'id' => $this->openId, 'nickname' => $user['nickname'],'name' => $user['nickname'], 'avatar' => $user['figureurl_qq_2'],
         ]);
     }
 
