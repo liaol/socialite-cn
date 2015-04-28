@@ -10,13 +10,29 @@ class WeixinProvider extends AbstractProvider implements ProviderInterface
 
     protected $openId;
 
+    /**
+     * The scopes being requested.
+     *
+     * @var array
+     */
+    protected $scopes = ['snsapi_login'];
 
-	 /**
+    /**
+     * The separating character for the requested scopes.
+     *
+     * @var string
+     */
+    protected $scopeSeparator = ',';
+
+
+     /**
      * {@inheritdoc}
      */
     protected function getAuthUrl($state)
     {
-        return $this->buildAuthUrlFromBase('https://open.weixin.qq.com/connect/oauth2/authorize', $state);
+        //https://open.weixin.qq.com/connect/qrconnect?appid=wxa7cab46e4f3f7e2f&redirect_uri=http%3A%2F%2F127.0.0.1%2Fsocialite%2Fweixin%2Fcallback&response_type=code&scope=snsapi_login&state=0b32666e9e6e694a9b9b059eb141a294e8ca698a#wechat_redirect
+        //https://open.weixin.qq.com/connect/qrconnect?appid=wxbdc5610cc59c1631&redirect_uri=https%3A%2F%2Fpassport.yhd.com%2Fwechat%2Fcallback.do&response_type=code&scope=snsapi_login&state=3d6be0a4035d839573b04816624a415e#wechat_redirect
+        return $this->buildAuthUrlFromBase('https://open.weixin.qq.com/connect/qrconnect', $state);
     }
 
     protected function buildAuthUrlFromBase($url, $state)
@@ -51,10 +67,6 @@ class WeixinProvider extends AbstractProvider implements ProviderInterface
      */
     public function getAccessToken($code)
     {
-        //if the code is setted ,use it instead
-        if (!is_null($this->code)) {
-            $code = $this->code;
-        }
         $response = $this->getHttpClient()->get($this->getTokenUrl(),['query'=>($this->getTokenFields($code))]);
         return  $this->parseAccessToken($response->getBody());
     }
@@ -79,7 +91,7 @@ class WeixinProvider extends AbstractProvider implements ProviderInterface
             'openid'=>$this->openId,
             'lang'=>'zh_CN'//简体中文
         ]]);
-        return checkError(json_decode($response->getBody(), true));
+        return $this->checkError(json_decode($response->getBody(), true));
     }
 
     /**
@@ -88,7 +100,7 @@ class WeixinProvider extends AbstractProvider implements ProviderInterface
     protected function mapUserToObject(array $user)
     {
         return (new User)->setRaw($user)->map([
-            'id' => $user['openid'], 'nickname' => $user['nickname'], 'avatar' => $user['headimgurl'],
+            'id' => $user['openid'], 'name' => $user['nickname'],'nickname' => $user['nickname'], 'avatar' => $user['headimgurl'],
         ]);
     }
 
@@ -111,7 +123,7 @@ class WeixinProvider extends AbstractProvider implements ProviderInterface
      */
     protected function checkError($data)
     {
-        if ($data['errcode'] != 0) {
+        if (isset($data['errcode'])) {
             throw new ErrorCodeException($data['errcode'],$data['errmsg']);
         }
         return $data;
