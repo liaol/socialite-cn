@@ -30,8 +30,6 @@ class WeixinProvider extends AbstractProvider implements ProviderInterface
      */
     protected function getAuthUrl($state)
     {
-        //https://open.weixin.qq.com/connect/qrconnect?appid=wxa7cab46e4f3f7e2f&redirect_uri=http%3A%2F%2F127.0.0.1%2Fsocialite%2Fweixin%2Fcallback&response_type=code&scope=snsapi_login&state=0b32666e9e6e694a9b9b059eb141a294e8ca698a#wechat_redirect
-        //https://open.weixin.qq.com/connect/qrconnect?appid=wxbdc5610cc59c1631&redirect_uri=https%3A%2F%2Fpassport.yhd.com%2Fwechat%2Fcallback.do&response_type=code&scope=snsapi_login&state=3d6be0a4035d839573b04816624a415e#wechat_redirect
         return $this->buildAuthUrlFromBase('https://open.weixin.qq.com/connect/qrconnect', $state);
     }
 
