@@ -63,7 +63,12 @@ class QQProvider extends AbstractProvider implements ProviderInterface
             // this should be clientId not client_id,
             'oauth_consumer_key'=>$this->clientId,
         ]]);
-        return $this->checkError(json_decode($this->removeCallback($response->getBody()), true));
+        $data = json_decode($response->getBody(), true);
+        if ($data['ret']==0) {
+            return $data;
+        }else{
+            throw new ErrorCodeException($data['ret'],$data['msg']);
+        }
     }
 
     /**
