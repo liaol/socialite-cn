@@ -8,10 +8,9 @@ use Laravel\Socialite\Two\User;
 
 class QQProvider extends AbstractProvider implements ProviderInterface
 {
-    protected $code; // this is for the code
     protected $openId;
 
-	 /**
+     /**
      * {@inheritdoc}
      */
     protected function getAuthUrl($state)
@@ -35,10 +34,7 @@ class QQProvider extends AbstractProvider implements ProviderInterface
      */
     public function getAccessToken($code)
     {
-        //if the code is setted ,use it instead
-        if (!is_null($this->code)) {
-            $code = $this->code;
-        }
+        $query=$this->getTokenFields($code);
         $response = $this->getHttpClient()->get($this->getTokenUrl(),['query'=>($this->getTokenFields($code))]);
         return  $this->parseAccessToken($this->removeCallback($response->getBody()));
     }
@@ -103,19 +99,29 @@ class QQProvider extends AbstractProvider implements ProviderInterface
      */
     protected function checkError($data)
     {
-        if ($data['code'] != 0) {
-            throw new ErrorCodeException($data['code'],$data['msg']);
+        if (isset($data['error'])) {
+            throw new ErrorCodeException($data['error'],$data['error_description']);
         }
         return $data;
     }
 
     protected function parseAccessToken($body)
     {
-        return $this->checkError(json_decode($body, true))['access_token'];
+        $access_token=null;
+        if (!$this->checkError(json_decode($body,true))) {
+            $body_array = explode('&', $body);
+            foreach ($body_array as $item) {
+                if(strpos($item, "access_token") !== false){
+                    $access_token = explode('=', $item)[1];
+                    break;
+                }
+            }
+        }
+        return $access_token;
     }
 
     protected function removeCallback($body)
     {
-        return  str_replace(['callback(',')',';'],'',$body);
+         return  str_replace(['callback(',')',';'],'',$body);
     }
 }
