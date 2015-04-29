@@ -168,7 +168,7 @@ abstract class AbstractProvider implements ProviderContract
 
         $user = $this->mapUserToObject($this->getUserByToken($token));
 
-        return $user->setToken($token,$expires_in,$refreh_token);
+        return $user->setToken($token,$expires_in,$refresh_token);
     }
 
     /**
