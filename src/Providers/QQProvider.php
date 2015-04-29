@@ -1,7 +1,7 @@
 <?php
 namespace Liaol\SocialiteCn\Providers;
 
-use Laravel\Socialite\Two\AbstractProvider;
+use Liaol\SocialiteCn\Providers\AbstractProvider;
 use Laravel\Socialite\Two\ProviderInterface;
 use Liaol\SocialiteCn\User;
 
