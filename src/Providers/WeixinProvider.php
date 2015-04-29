@@ -3,8 +3,7 @@ namespace Liaol\SocialiteCn\Providers;
 
 use Laravel\Socialite\Two\AbstractProvider;
 use Laravel\Socialite\Two\ProviderInterface;
-use Laravel\Socialite\Two\User;
-use Liaol\SocialiteCn\WeixinUser;
+use Liaol\SocialiteCn\User;
 
 class WeixinProvider extends AbstractProvider implements ProviderInterface
 {
@@ -93,29 +92,12 @@ class WeixinProvider extends AbstractProvider implements ProviderInterface
         return $this->checkError(json_decode($response->getBody(), true));
     }
 
-    public function user()
-    {
-        if ($this->hasInvalidState()) {
-            throw new InvalidStateException;
-        }
-
-        $result = $this->getAccessToken($this->getCode());
-        $token = $result['access_token'];
-        $expires_in = $result['expires_in'];
-        $refresh_token = $result['refresh_token'];
-
-        $user = $this->mapUserToObject($this->getUserByToken($token));
-
-        return $user->setToken($token,$expires_in,$refreh_token);
-    }
-
-
     /**
      * {@inheritdoc}
      */
     protected function mapUserToObject(array $user)
     {
-        return (new WeixinUser)->setRaw($user)->map([
+        return (new User)->setRaw($user)->map([
             'id' => $user['openid'], 'name' => $user['nickname'],'nickname' => $user['nickname'], 'avatar' => $user['headimgurl'],
         ]);
     }

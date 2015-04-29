@@ -2,7 +2,7 @@
 
 use Laravel\Socialite\AbstractUser;
 
-class WeixinUser extends AbstractUser
+class User extends AbstractUser
 {
 
     /**

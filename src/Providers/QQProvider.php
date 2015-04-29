@@ -3,7 +3,7 @@ namespace Liaol\SocialiteCn\Providers;
 
 use Laravel\Socialite\Two\AbstractProvider;
 use Laravel\Socialite\Two\ProviderInterface;
-use Laravel\Socialite\Two\User;
+use Liaol\SocialiteCn\User;
 
 
 class QQProvider extends AbstractProvider implements ProviderInterface
