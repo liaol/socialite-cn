@@ -1,22 +1,36 @@
 <?php
 namespace Liaol\SocialiteCn\Providers;
 
-use Laravel\Socialite\Two\AbstractProvider;
+use Liaol\SocialiteCn\Providers\AbstractProvider;
 use Laravel\Socialite\Two\ProviderInterface;
-use Laravel\Socialite\Two\User;
+use Liaol\SocialiteCn\User;
 
 class WeixinProvider extends AbstractProvider implements ProviderInterface
 {
 
     protected $openId;
 
+    /**
+     * The scopes being requested.
+     *
+     * @var array
+     */
+    protected $scopes = ['snsapi_login'];
 
-	 /**
+    /**
+     * The separating character for the requested scopes.
+     *
+     * @var string
+     */
+    protected $scopeSeparator = ',';
+
+
+     /**
      * {@inheritdoc}
      */
     protected function getAuthUrl($state)
     {
-        return $this->buildAuthUrlFromBase('https://open.weixin.qq.com/connect/oauth2/authorize', $state);
+        return $this->buildAuthUrlFromBase('https://open.weixin.qq.com/connect/qrconnect', $state);
     }
 
     protected function buildAuthUrlFromBase($url, $state)
@@ -51,10 +65,6 @@ class WeixinProvider extends AbstractProvider implements ProviderInterface
      */
     public function getAccessToken($code)
     {
-        //if the code is setted ,use it instead
-        if (!is_null($this->code)) {
-            $code = $this->code;
-        }
         $response = $this->getHttpClient()->get($this->getTokenUrl(),['query'=>($this->getTokenFields($code))]);
         return  $this->parseAccessToken($response->getBody());
     }
@@ -79,7 +89,7 @@ class WeixinProvider extends AbstractProvider implements ProviderInterface
             'openid'=>$this->openId,
             'lang'=>'zh_CN'//简体中文
         ]]);
-        return checkError(json_decode($response->getBody(), true));
+        return $this->checkError(json_decode($response->getBody(), true));
     }
 
     /**
@@ -88,7 +98,7 @@ class WeixinProvider extends AbstractProvider implements ProviderInterface
     protected function mapUserToObject(array $user)
     {
         return (new User)->setRaw($user)->map([
-            'id' => $user['openid'], 'nickname' => $user['nickname'], 'avatar' => $user['headimgurl'],
+            'id' => $user['openid'], 'name' => $user['nickname'],'nickname' => $user['nickname'], 'avatar' => $user['headimgurl'],
         ]);
     }
 
@@ -99,7 +109,7 @@ class WeixinProvider extends AbstractProvider implements ProviderInterface
     {
         $jsonArray =  $this->checkError(json_decode($body, true));
         $this->openId = $jsonArray['openid'];//记录openid
-        return $jsonArray['access_token'];
+        return $jsonArray;
     }
 
     /**
@@ -111,7 +121,7 @@ class WeixinProvider extends AbstractProvider implements ProviderInterface
      */
     protected function checkError($data)
     {
-        if ($data['errcode'] != 0) {
+        if (isset($data['errcode'])) {
             throw new ErrorCodeException($data['errcode'],$data['errmsg']);
         }
         return $data;

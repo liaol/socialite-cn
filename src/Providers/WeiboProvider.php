@@ -1,9 +1,9 @@
 <?php
 namespace Liaol\SocialiteCn\Providers;
 
-use Laravel\Socialite\Two\AbstractProvider;
+use Liaol\SocialiteCn\Providers\AbstractProvider;
 use Laravel\Socialite\Two\ProviderInterface;
-use Laravel\Socialite\Two\User;
+use Liaol\SocialiteCn\User;
 
 
 class WeiboProvider extends AbstractProvider implements ProviderInterface
@@ -34,10 +34,6 @@ class WeiboProvider extends AbstractProvider implements ProviderInterface
      */
     public function getAccessToken($code)
     {
-        //if the code is setted ,use it instead
-        if (!is_null($this->code)) {
-            $code = $this->code;
-        }
         $response = $this->getHttpClient()->post($this->getTokenUrl(),['query'=>($this->getTokenFields($code))]);
         return  $this->parseAccessToken($response->getBody());
     }
@@ -62,7 +58,7 @@ class WeiboProvider extends AbstractProvider implements ProviderInterface
     protected function mapUserToObject(array $user)
     {
         return (new User)->setRaw($user)->map([
-            'id' => $user['idstr'], 'nickname' => $user['name'], 'avatar' => $user['avatar_large'],
+            'id' => $user['idstr'], 'nickname' => $user['screen_name'],'name' => $user['name'], 'avatar' => isset($user['avatar_hd'])?$user['avatar_hd']:$user['avatar_large'],
         ]);
     }
 

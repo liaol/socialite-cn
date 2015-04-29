@@ -1,17 +1,16 @@
 <?php
 namespace Liaol\SocialiteCn\Providers;
 
-use Laravel\Socialite\Two\AbstractProvider;
+use Liaol\SocialiteCn\Providers\AbstractProvider;
 use Laravel\Socialite\Two\ProviderInterface;
-use Laravel\Socialite\Two\User;
+use Liaol\SocialiteCn\User;
 
 
 class QQProvider extends AbstractProvider implements ProviderInterface
 {
-    protected $code; // this is for the code
     protected $openId;
 
-	 /**
+     /**
      * {@inheritdoc}
      */
     protected function getAuthUrl($state)
@@ -35,10 +34,7 @@ class QQProvider extends AbstractProvider implements ProviderInterface
      */
     public function getAccessToken($code)
     {
-        //if the code is setted ,use it instead
-        if (!is_null($this->code)) {
-            $code = $this->code;
-        }
+        $query=$this->getTokenFields($code);
         $response = $this->getHttpClient()->get($this->getTokenUrl(),['query'=>($this->getTokenFields($code))]);
         return  $this->parseAccessToken($this->removeCallback($response->getBody()));
     }
@@ -67,7 +63,12 @@ class QQProvider extends AbstractProvider implements ProviderInterface
             // this should be clientId not client_id,
             'oauth_consumer_key'=>$this->clientId,
         ]]);
-        return $this->checkError(json_decode($this->removeCallback($response->getBody()), true));
+        $data = json_decode($response->getBody(), true);
+        if ($data['ret']==0) {
+            return $data;
+        }else{
+            throw new ErrorCodeException($data['ret'],$data['msg']);
+        }
     }
 
     /**
@@ -76,7 +77,7 @@ class QQProvider extends AbstractProvider implements ProviderInterface
     protected function mapUserToObject(array $user)
     {
         return (new User)->setRaw($user)->map([
-            'id' => $this->openId, 'nickname' => $user['nickname'], 'avatar' => $user['figureurl'],
+            'id' => $this->openId, 'nickname' => $user['nickname'],'name' => $user['nickname'], 'avatar' => $user['figureurl_qq_2'],
         ]);
     }
 
@@ -103,19 +104,27 @@ class QQProvider extends AbstractProvider implements ProviderInterface
      */
     protected function checkError($data)
     {
-        if ($data['code'] != 0) {
-            throw new ErrorCodeException($data['code'],$data['msg']);
+        if (isset($data['error'])) {
+            throw new ErrorCodeException($data['error'],$data['error_description']);
         }
         return $data;
     }
 
     protected function parseAccessToken($body)
     {
-        return $this->checkError(json_decode($body, true))['access_token'];
+        $result=array();
+        if (!$this->checkError(json_decode($body,true))) {
+            $body_array = explode('&', $body);
+            foreach ($body_array as $item) {
+                $split = explode('=', $item);
+                $result[$split[0]] = $split[1];
+            }
+        }
+        return $result;
     }
 
     protected function removeCallback($body)
     {
-        return  str_replace(['callback(',')',';'],'',$body);
+         return  str_replace(['callback(',')',';'],'',$body);
     }
 }
