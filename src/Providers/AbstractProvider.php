@@ -163,7 +163,7 @@ abstract class AbstractProvider implements ProviderContract
 
         $result = $this->getAccessToken($this->getCode());
         $token = isset($result['access_token'])?$result['access_token']:null;
-        $expires_in = isset($result['expires_in'])?$result['expires_in']:null;
+        $expires_in = isset($result['expires_in'])? str(time()+int($result['expires_in'])):null;
         $refresh_token = isset($result['refresh_token'])?$result['refresh_token']:null;
 
         $user = $this->mapUserToObject($this->getUserByToken($token));

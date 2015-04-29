@@ -19,8 +19,8 @@ class User extends AbstractUser
     public $refresh_token;
 
     /**
-     * accesstoken expires
-     * @var int
+     * accesstoken expires 
+     * @var timestamp
      */
     public $expires_in;
 
