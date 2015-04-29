@@ -112,17 +112,15 @@ class QQProvider extends AbstractProvider implements ProviderInterface
 
     protected function parseAccessToken($body)
     {
-        $access_token=null;
+        $result=array();
         if (!$this->checkError(json_decode($body,true))) {
             $body_array = explode('&', $body);
             foreach ($body_array as $item) {
-                if(strpos($item, "access_token") !== false){
-                    $access_token = explode('=', $item)[1];
-                    break;
-                }
+                $split = explode('=', $item);
+                $result[$split[0]] = $split[1];
             }
         }
-        return $access_token;
+        return $result;
     }
 
     protected function removeCallback($body)
