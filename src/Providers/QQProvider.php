@@ -8,7 +8,6 @@ use Laravel\Socialite\Two\User;
 
 class QQProvider extends AbstractProvider implements ProviderInterface
 {
-    protected $code; // this is for the code
     protected $openId;
 
 	 /**
@@ -35,10 +34,6 @@ class QQProvider extends AbstractProvider implements ProviderInterface
      */
     public function getAccessToken($code)
     {
-        //if the code is setted ,use it instead
-        if (!is_null($this->code)) {
-            $code = $this->code;
-        }
         $response = $this->getHttpClient()->get($this->getTokenUrl(),['query'=>($this->getTokenFields($code))]);
         return  $this->parseAccessToken($this->removeCallback($response->getBody()));
     }
