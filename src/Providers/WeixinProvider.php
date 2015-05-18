@@ -16,7 +16,7 @@ class WeixinProvider extends AbstractProvider implements ProviderInterface
      */
     protected function getAuthUrl($state)
     {
-        return $this->buildAuthUrlFromBase('https://open.weixin.qq.com/connect/oauth2/authorize', $state);
+        return $this->buildAuthUrlFromBase('https://open.weixin.qq.com/connect/qrconnect', $state);
     }
 
     protected function buildAuthUrlFromBase($url, $state)
@@ -75,7 +75,7 @@ class WeixinProvider extends AbstractProvider implements ProviderInterface
             'openid'=>$this->openId,
             'lang'=>'zh_CN'//简体中文
         ]]);
-        return checkError(json_decode($response->getBody(), true));
+        return $this->checkError(json_decode($response->getBody(), true));
     }
 
     /**
@@ -107,7 +107,7 @@ class WeixinProvider extends AbstractProvider implements ProviderInterface
      */
     protected function checkError($data)
     {
-        if ($data['errcode'] != 0) {
+        if (isset($data['errcode']) && $data['errcode'] != 0) {
             throw new ErrorCodeException($data['errcode'],$data['errmsg']);
         }
         return $data;
