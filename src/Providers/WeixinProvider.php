@@ -75,7 +75,7 @@ class WeixinProvider extends AbstractProvider implements ProviderInterface
             'openid'=>$this->openId,
             'lang'=>'zh_CN'//简体中文
         ]]);
-        return checkError(json_decode($response->getBody(), true));
+        return $this->checkError(json_decode($response->getBody(), true));
     }
 
     /**
