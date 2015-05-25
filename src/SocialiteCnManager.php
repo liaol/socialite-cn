@@ -27,4 +27,12 @@ class SocialiteCnManager extends SocialiteManager
             'Liaol\SocialiteCn\Providers\QQProvider', $config
         );
 	}
+
+	protected function createWeixinWebDriver()
+	{
+		$config = $this->app['config']['services.weixinWeb'];
+        return $this->buildProvider(
+            'Liaol\SocialiteCn\Providers\WeixinWebProvider', $config
+        );
+	}
 }

@@ -44,8 +44,10 @@ class QQProvider extends AbstractProvider implements ProviderInterface
     protected function getTokenFields($code)
     {
         return [
-            'client_id' => $this->clientId, 'client_secret' => $this->clientSecret,
-            'code' => $code, 'redirect_uri' => $this->redirectUrl,
+            'client_id' => $this->clientId, 
+            'client_secret' => $this->clientSecret,
+            'code' => $code, 
+            'redirect_uri' => $this->redirectUrl,
             'grant_type'=>'authorization_code'
         ];
     }
@@ -106,7 +108,8 @@ class QQProvider extends AbstractProvider implements ProviderInterface
 
     protected function parseAccessToken($body)
     {
-        return $this->checkError(json_decode($body, true))['access_token'];
+        parse_str($body,$array);
+        return $array['access_token'];
     }
 
     protected function removeCallback($body)
