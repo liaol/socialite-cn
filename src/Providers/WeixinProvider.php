@@ -5,7 +5,7 @@ use Laravel\Socialite\Two\AbstractProvider;
 use Laravel\Socialite\Two\ProviderInterface;
 use Laravel\Socialite\Two\User;
 
-class WeixinWebProvider extends AbstractProvider implements ProviderInterface
+class WeixinProvider extends AbstractProvider implements ProviderInterface
 {
 
     protected $openId;
