@@ -100,8 +100,10 @@ class QQProvider extends AbstractProvider implements ProviderInterface
      */
     protected function checkError($data)
     {
-        if ($data['code'] != 0) {
-            throw new ErrorCodeException($data['code'],$data['msg']);
+        if (isset($data['error'])) {
+            if( $data['error'] != 0) {
+                throw new ErrorCodeException($data['error'],$data['error_description']);
+            }
         }
         return $data;
     }
