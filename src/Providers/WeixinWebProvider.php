@@ -108,7 +108,7 @@ class WeixinWebProvider extends AbstractProvider implements ProviderInterface
      */
     protected function checkError($data)
     {
-        if (isset($data['errorcode'])) {
+        if (isset($data['errcode'])) {
             if ($data['errcode'] != 0) {
                 throw new ErrorCodeException($data['errcode'],$data['errmsg']);
             }
