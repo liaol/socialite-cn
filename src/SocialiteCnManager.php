@@ -35,4 +35,20 @@ class SocialiteCnManager extends SocialiteManager
             'Liaol\SocialiteCn\Providers\WeixinWebProvider', $config
         );
 	}
+
+	protected function createQQAppDriver()
+	{
+		$config = $this->app['config']['services.qqApp'];
+        return $this->buildProvider(
+            'Liaol\SocialiteCn\Providers\QQAppProvider', $config
+        );
+	}
+
+	protected function createWeiboAppDriver()
+	{
+		$config = $this->app['config']['services.weiboApp'];
+        return $this->buildProvider(
+            'Liaol\SocialiteCn\Providers\WeiboAppProvider', $config
+        );
+	}
 }
