@@ -23,6 +23,8 @@ Oauth authentication with Weixin,Weibo and QQ.
 [weibo](http://open.weibo.com/wiki/%E6%8E%88%E6%9D%83%E6%9C%BA%E5%88%B6)    
 [qq](http://wiki.open.qq.com/wiki/website/OAuth2.0%E5%BC%80%E5%8F%91%E6%96%87%E6%A1%A3)    
 
+weiboApp, qqApp are used for Api
+
 
 
 
