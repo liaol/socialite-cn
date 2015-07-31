@@ -26,7 +26,7 @@ class WeixinWebProvider extends AbstractProvider implements ProviderInterface
         return $url.'?'.http_build_query($this->getCodeFields($state), '', '&', $this->encodingType) . '#wechat_redirect';
     }
 
-    protected function getCodeFields($state)
+    protected function getCoeFields($state = null)
     {
         return [
             'appid' => $this->clientId, 
