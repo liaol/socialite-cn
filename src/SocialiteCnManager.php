@@ -51,4 +51,12 @@ class SocialiteCnManager extends SocialiteManager
             'Liaol\SocialiteCn\Providers\WeiboAppProvider', $config
         );
 	}
+
+    protected function createDoubanDriver()
+    {
+        $config = $this->app['config']['services.douban'];
+        return $this->buildProvider(
+            'Liaol\SocialiteCn\Providers\DoubanProvider', $config
+        );
+    }
 }
