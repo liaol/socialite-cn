@@ -58,12 +58,12 @@ class WeixinProvider extends AbstractProvider implements ProviderInterface
 
     protected function getTokenFields($code)
     {
-        return array(
+        return array_merge(array(
             'appid'=>$this->clientId,
             'secret'=>$this->clientSecret,
             'code'=>$code,
             'grant_type'=>'authorization_code',
-        );
+        ),$this->parameters);
     }
 
     /**

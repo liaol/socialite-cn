@@ -43,13 +43,13 @@ class QQProvider extends AbstractProvider implements ProviderInterface
      */
     protected function getTokenFields($code)
     {
-        return [
+        return array_merge([
             'client_id' => $this->clientId, 
             'client_secret' => $this->clientSecret,
             'code' => $code, 
             'redirect_uri' => $this->redirectUrl,
             'grant_type'=>'authorization_code'
-        ];
+        ],$this->$this->parameters);
     }
 
 
