@@ -28,12 +28,12 @@ class WeixinWebProvider extends AbstractProvider implements ProviderInterface
 
     protected function getCodeFields($state = null)
     {
-        return [
+        return array_merge([
             'appid' => $this->clientId, 
             'redirect_uri' => $this->redirectUrl,
             'response_type' => 'code',
             'scope' => $this->formatScopes($this->scopes, $this->scopeSeparator), 'state' => $state,
-        ];
+        ],$this->$this->parameters);
     }
 
     /**
