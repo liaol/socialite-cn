@@ -49,7 +49,7 @@ class QQProvider extends AbstractProvider implements ProviderInterface
             'code' => $code, 
             'redirect_uri' => $this->redirectUrl,
             'grant_type'=>'authorization_code'
-        ],$this->$this->parameters);
+        ],$this->parameters);
     }
 
 
