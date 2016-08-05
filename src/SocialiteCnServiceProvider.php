@@ -11,7 +11,7 @@ class SocialiteCnServiceProvider extends SocialiteServiceProvider
     public function register()
     {
        // parent::boot();
-        $this->app->bindShared('Laravel\Socialite\Contracts\Factory', function ($app) {
+        $this->app->singleton('Laravel\Socialite\Contracts\Factory', function ($app) {
             return new SocialiteCnManager($app);
         });
     }
